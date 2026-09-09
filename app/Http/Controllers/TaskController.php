@@ -28,17 +28,28 @@ class TaskController extends Controller
     }
 
     public function store(StoreTaskRequest $request)
-    {
-        // نتأكد إنه المشروع تبع المستخدم الحالي
-        $project = $request->user()->projects()->findOrFail($request->project_id);
+{
+    $project = $request->user()->projects()->findOrFail($request->project_id);
 
-        $task = $project->tasks()->create([
-            ...$request->validated(),
-            'user_id' => $request->user()->id,
-        ]);
+    $task = $project->tasks()->create([
+        ...$request->validated(),
+        'user_id' => $request->user()->id,
+    ]);
 
-        return back()->with('success', 'تمت إضافة المهمة.');
+    // معالجة الوسوم (نص مفصول بفواصل)
+    if ($request->filled('tags')) {
+        $tagIds = collect(explode(',', $request->tags))
+            ->map(fn ($name) => trim($name))
+            ->filter()
+            ->map(function ($name) use ($request) {
+                return $request->user()->tags()->firstOrCreate(['name' => $name])->id;
+            });
+
+        $task->tags()->sync($tagIds);
     }
+
+    return back()->with('success', 'تمت إضافة المهمة.');
+}
 
     public function update(UpdateTaskRequest $request, Task $task)
     {

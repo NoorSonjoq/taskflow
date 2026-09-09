@@ -45,6 +45,12 @@
                         <input type="date" name="due_date" value="{{ old('due_date') }}"
                                class="rounded-lg border-gray-300">
                     </div>
+                                        <div>
+                        <input type="text" name="tags" placeholder="وسوم (مثال: مهم, شغل)"
+                               value="{{ old('tags') }}"
+                               class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                        <p class="mt-1 text-xs text-gray-400">افصل الوسوم بفاصلة</p>
+                    </div>
 
                     <button type="submit"
                             class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
@@ -73,6 +79,11 @@
                                 @if ($task->due_date)
                                     <span class="text-gray-400">📅 {{ $task->due_date->format('Y-m-d') }}</span>
                                 @endif
+                                                                @foreach ($task->tags as $tag)
+                                    <span class="rounded-full bg-purple-100 px-2 py-0.5 text-purple-700">
+                                        #{{ $tag->name }}
+                                    </span>
+                                @endforeach
                             </div>
                         </div>
 
