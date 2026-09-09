@@ -34,8 +34,12 @@
                         <div class="rounded-xl bg-white p-5 shadow transition hover:shadow-md">
                             <div class="mb-3 flex items-center gap-2">
                                 <span class="inline-block h-4 w-4 rounded-full"
-                                      style="background: {{ $project->color }}"></span>
-                                <h3 class="font-semibold text-gray-800">{{ $project->name }}</h3>
+                                      @style(['background: ' . $project->color])></span>
+                                <h3 class="font-semibold text-gray-800">
+                                    <a href="{{ route('projects.show', $project) }}" class="hover:text-indigo-600 hover:underline">
+                                        {{ $project->name }}
+                                    </a>
+                                </h3>
                             </div>
 
                             <p class="mb-4 text-sm text-gray-500">
