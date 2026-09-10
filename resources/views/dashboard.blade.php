@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-bold text-white">لوحة التحكم</h2>
+        <h2 class="text-xl font-boldtext-slate-800">لوحة التحكم</h2>
     </x-slot>
 
     <div class="py-8">
@@ -8,7 +8,7 @@
 
             {{-- Welcome --}}
             <div class="animate-fade-in">
-                <h1 class="text-2xl font-bold text-white">أهلاً <span class="gradient-text">{{ auth()->user()->name }}</span> 👋</h1>
+                <h1 class="text-2xl font-bold text-slate-800">أهلاً <span class="gradient-text">{{ auth()->user()->name }}</span> 👋</h1>
                 <p class="mt-1 text-dark-400">هاي نظرة سريعة على مهامك ومشاريعك.</p>
             </div>
 
@@ -23,7 +23,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-dark-400 font-medium">المشاريع</p>
-                            <p class="text-2xl font-bold text-white">{{ $stats['projects'] }}</p>
+                            <p class="text-2xl font-bold text-slate-800">{{ $stats['projects'] }}</p>
                         </div>
                     </div>
                 </div>
@@ -36,7 +36,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-dark-400 font-medium">إجمالي المهام</p>
-                            <p class="text-2xl font-bold text-white">{{ $stats['tasks'] }}</p>
+                            <p class="text-2xl font-bold text-slate-800">{{ $stats['tasks'] }}</p>
                         </div>
                     </div>
                 </div>
