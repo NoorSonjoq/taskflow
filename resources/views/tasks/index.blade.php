@@ -15,6 +15,12 @@
             {{-- الفلترة --}}
             <div class="rounded-xl bg-white p-4 shadow">
                 <form method="GET" action="{{ route('tasks.index') }}" class="flex flex-wrap items-end gap-4">
+                                        <div>
+                        <label class="mb-1 block text-xs font-medium text-gray-600">بحث</label>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                               placeholder="عنوان المهمة..."
+                               class="rounded-lg border-gray-300 text-sm">
+                    </div>
                     <div>
                         <label class="mb-1 block text-xs font-medium text-gray-600">الحالة</label>
                         <select name="status" class="rounded-lg border-gray-300 text-sm">

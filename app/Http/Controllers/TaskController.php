@@ -21,6 +21,9 @@ class TaskController extends Controller
         if ($request->filled('priority')) {
             $tasks->where('priority', $request->priority);
         }
+                if ($request->filled('search')) {
+            $tasks->where('title', 'like', '%' . $request->search . '%');
+        }
 
         $tasks = $tasks->get();
 
