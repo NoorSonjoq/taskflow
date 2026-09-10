@@ -44,4 +44,17 @@
             </x-primary-button>
         </div>
     </form>
+        <div class="mt-6 space-y-3">
+        <div class="text-center text-sm text-gray-500">أو سجّل الدخول عبر</div>
+
+        <a href="{{ route('social.redirect', 'github') }}"
+           class="block w-full rounded-lg bg-gray-800 px-4 py-2 text-center text-sm font-medium text-white hover:bg-gray-900">
+            GitHub
+        </a>
+
+        <a href="{{ route('social.redirect', 'google') }}"
+           class="block w-full rounded-lg bg-red-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-red-700">
+            Google
+        </a>
+    </div>
 </x-guest-layout>

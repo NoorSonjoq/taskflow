@@ -3,11 +3,14 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\SocialLoginController;
+
 
 Route::get('/', function () {
     return view('welcome');
 });
-
+Route::get('/auth/{provider}/redirect', [SocialLoginController::class, 'redirect'])->name('social.redirect');
+Route::get('/auth/{provider}/callback', [SocialLoginController::class, 'callback'])->name('social.callback');
 Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');
     
