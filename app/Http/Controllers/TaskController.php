@@ -50,15 +50,34 @@ class TaskController extends Controller
 
     return back()->with('success', 'تمت إضافة المهمة.');
 }
+    public function edit(Task $task)
+    {
+        $this->authorize('update', $task);
+
+        $task->load('tags', 'project');
+
+        return view('tasks.edit', compact('task'));
+    }
 
     public function update(UpdateTaskRequest $request, Task $task)
     {
         $this->authorize('update', $task);
 
-        $task->update($request->validated());
+        // نحدّث حقول المهمة (بدون الوسوم — لأنها مش عمود بالجدول)
+        $task->update($request->safe()->except('tags'));
 
-        return back()->with('success', 'تم تحديث المهمة.');
-    }
+        // نعيد مزامنة الوسوم فقط لو الفورم بعت حقل tags
+        if ($request->has('tags')) {
+            $tagIds = collect(explode(',', (string) $request->tags))
+                ->map(fn ($name) => trim($name))
+                ->filter()
+                ->map(fn ($name) => $request->user()->tags()->firstOrCreate(['name' => $name])->id);
+
+            $task->tags()->sync($tagIds);
+        }
+
+        return redirect()->route('projects.show', $task->project)
+            ->with('success', 'تم تحديث المهمة.');    }
 
     public function destroy(Task $task)
     {

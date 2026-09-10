@@ -19,6 +19,7 @@ class UpdateTaskRequest extends FormRequest
             'status'      => ['required', 'in:todo,in_progress,done'],
             'priority'    => ['required', 'in:low,medium,high'],
             'due_date'    => ['nullable', 'date'],
+            'tags'        => ['nullable', 'string', 'max:255'],
         ];
     }
 }

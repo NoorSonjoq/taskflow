@@ -102,7 +102,8 @@
                                     <option value="done" @selected($task->status === 'done')>مكتملة</option>
                                 </select>
                             </form>
-
+                            <a href="{{ route('tasks.edit', $task) }}"
+                               class="text-indigo-600 hover:underline text-sm">تعديل</a>
                             {{-- حذف --}}
                             <form action="{{ route('tasks.destroy', $task) }}" method="POST"
                                   onsubmit="return confirm('حذف المهمة؟')">

@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::post('tasks', [\App\Http\Controllers\TaskController::class, 'store'])->name('tasks.store');
     Route::put('tasks/{task}', [\App\Http\Controllers\TaskController::class, 'update'])->name('tasks.update');
     Route::delete('tasks/{task}', [\App\Http\Controllers\TaskController::class, 'destroy'])->name('tasks.destroy');
+        Route::get('tasks/{task}/edit', [\App\Http\Controllers\TaskController::class, 'edit'])->name('tasks.edit');
 });
 
 require __DIR__.'/auth.php';
