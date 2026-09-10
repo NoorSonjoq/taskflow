@@ -95,8 +95,70 @@
                         ما في مهام مطابقة.
                     </p>
                 @endforelse
-            </div>
 
-        </div>
+                <div class="mt-4">
+                    {{ $tasks->links() }}
+                </div>
+            </div>
+                                   {{-- إضافة مهمة سريعة --}}
+            <div x-data="{ open: false }">
+                <button @click="open = !open"
+                        class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+                    <span x-show="!open">+ إضافة مهمة</span>
+                    <span x-show="open">− إخفاء</span>
+                </button>
+
+                <div x-show="open" x-collapse class="mt-3 rounded-xl bg-white p-6 shadow">
+                    @if ($projects->isEmpty())
+                        <p class="text-sm text-gray-500">
+                            لازم تنشئ مشروع أول.
+                            <a href="{{ route('projects.create') }}" class="text-indigo-600 hover:underline">أنشئ مشروع</a>
+                        </p>
+                    @else
+                        <form action="{{ route('tasks.store') }}" method="POST" class="space-y-4">
+                            @csrf
+
+                            <div class="grid gap-4 sm:grid-cols-2">
+                                <input type="text" name="title" placeholder="عنوان المهمة" value="{{ old('title') }}"
+                                       class="rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+
+                                <select name="project_id" class="rounded-lg border-gray-300">
+                                    <option value="">اختر المشروع</option>
+                                    @foreach ($projects as $project)
+                                        <option value="{{ $project->id }}" @selected(old('project_id') == $project->id)>
+                                            {{ $project->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="grid gap-4 sm:grid-cols-3">
+                                <select name="status" class="rounded-lg border-gray-300">
+                                    <option value="todo">قيد الانتظار</option>
+                                    <option value="in_progress">قيد التنفيذ</option>
+                                    <option value="done">مكتملة</option>
+                                </select>
+
+                                <select name="priority" class="rounded-lg border-gray-300">
+                                    <option value="low">أولوية منخفضة</option>
+                                    <option value="medium" selected>أولوية متوسطة</option>
+                                    <option value="high">أولوية عالية</option>
+                                </select>
+
+                                <input type="date" name="due_date" value="{{ old('due_date') }}"
+                                       class="rounded-lg border-gray-300">
+                            </div>
+
+                            <input type="text" name="tags" placeholder="وسوم (مثال: مهم, شغل)" value="{{ old('tags') }}"
+                                   class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+
+                            <button type="submit"
+                                    class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+                                إضافة المهمة
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            </div>
     </div>
 </x-app-layout>

@@ -25,10 +25,10 @@ class TaskController extends Controller
             $tasks->where('title', 'like', '%' . $request->search . '%');
         }
 
-        $tasks = $tasks->get();
+        $tasks = $tasks->paginate(10)->withQueryString();
+        $projects = $request->user()->projects()->get();
 
-        return view('tasks.index', compact('tasks'));
-    }
+        return view('tasks.index', compact('tasks', 'projects'));    }
 
     public function store(StoreTaskRequest $request)
 {
