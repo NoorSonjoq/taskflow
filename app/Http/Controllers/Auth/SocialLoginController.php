@@ -32,7 +32,7 @@ class SocialLoginController extends Controller
                 'name'        => $socialUser->getName() ?? $socialUser->getNickname(),
                 'provider'    => $provider,
                 'provider_id' => $socialUser->getId(),
-                'password'    => Str::random(32), // باسوورd عشوائي (مش رح يستعمله)
+                'password'    => Str::random(32),
             ]
         );
 

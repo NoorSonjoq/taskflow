@@ -12,6 +12,8 @@ Route::get('/', function () {
         ? redirect()->route('dashboard')
         : redirect()->route('login');
 });
+Route::get('/locale/{locale}', [\App\Http\Controllers\LocaleController::class, 'update'])->name('locale.update');
+
 Route::get('/auth/{provider}/redirect', [SocialLoginController::class, 'redirect'])->name('social.redirect');
 Route::get('/auth/{provider}/callback', [SocialLoginController::class, 'callback'])->name('social.callback');
 Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
@@ -28,6 +30,9 @@ Route::middleware('auth')->group(function () {
     Route::put('tasks/{task}', [\App\Http\Controllers\TaskController::class, 'update'])->name('tasks.update');
     Route::delete('tasks/{task}', [\App\Http\Controllers\TaskController::class, 'destroy'])->name('tasks.destroy');
         Route::get('tasks/{task}/edit', [\App\Http\Controllers\TaskController::class, 'edit'])->name('tasks.edit');
+
+    Route::post('tasks/{task}/notes', [\App\Http\Controllers\TaskNoteController::class, 'store'])->name('tasks.notes.store');
+    Route::delete('tasks/{task}/notes/{note}', [\App\Http\Controllers\TaskNoteController::class, 'destroy'])->name('tasks.notes.destroy');
 });
 
 require __DIR__.'/auth.php';

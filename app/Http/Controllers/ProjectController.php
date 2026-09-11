@@ -15,7 +15,8 @@ class ProjectController extends Controller
             ->projects()
             ->withCount('tasks')
             ->latest()
-            ->get();
+            ->paginate(9)
+            ->withQueryString();
 
         return view('projects.index', compact('projects'));
     }
@@ -30,7 +31,7 @@ class ProjectController extends Controller
         $request->user()->projects()->create($request->validated());
 
         return redirect()->route('projects.index')
-            ->with('success', 'تم إنشاء المشروع.');
+            ->with('success', __('تم إنشاء المشروع.'));
     }
 
     public function show(Project $project)
@@ -56,7 +57,7 @@ class ProjectController extends Controller
         $project->update($request->validated());
 
         return redirect()->route('projects.index')
-            ->with('success', 'تم تحديث المشروع.');
+            ->with('success', __('تم تحديث المشروع.'));
     }
 
     public function destroy(Project $project)
@@ -66,6 +67,6 @@ class ProjectController extends Controller
         $project->delete();
 
         return redirect()->route('projects.index')
-            ->with('success', 'تم حذف المشروع.');
+            ->with('success', __('تم حذف المشروع.'));
     }
 }

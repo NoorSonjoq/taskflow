@@ -1,60 +1,51 @@
 <x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <div class="flex flex-col gap-1.5">
+        <span class="page-eyebrow">{{ __('أهلاً بعودتك') }}</span>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ __('تسجيل الدخول') }}</h1>
+    </div>
 
-    <form method="POST" action="{{ route('login') }}">
+    <x-auth-session-status :status="session('status')" />
+
+    <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-5">
         @csrf
 
-        <!-- Email Address -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-input-label for="email" :value="__('البريد الإلكتروني')" />
+            <x-text-input id="email" class="tnum" type="email" name="email" :value="old('email')"
+                          placeholder="name@example.com" required autofocus autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" />
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div>
+            <x-input-label for="password" :value="__('كلمة المرور')" />
+            <x-text-input id="password" type="password" name="password"
+                          placeholder="••••••••" required autocomplete="current-password" />
+            <x-input-error :messages="$errors->get('password')" />
         </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+        <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <input type="checkbox" name="remember" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                {{ __('تذكّرني') }}
             </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
+                <a href="{{ route('password.request') }}" class="text-sm font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300">{{ __('نسيت كلمة المرور؟') }}</a>
             @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
         </div>
+
+        <button type="submit" class="btn-primary w-full">{{ __('دخول') }}</button>
     </form>
-        <div class="mt-6 space-y-3">
-        <div class="text-center text-sm text-gray-500">أو سجّل الدخول عبر</div>
 
-        <a href="{{ route('social.redirect', 'github') }}"
-           class="block w-full rounded-lg bg-gray-800 px-4 py-2 text-center text-sm font-medium text-white hover:bg-gray-900">
-            GitHub
-        </a>
-
-        <a href="{{ route('social.redirect', 'google') }}"
-           class="block w-full rounded-lg bg-red-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-red-700">
-            Google
-        </a>
+    <div class="flex items-center gap-3 text-xs text-gray-400">
+        <span class="h-px flex-1 bg-gray-200"></span>
+        {{ __('أو سجّل الدخول عبر') }}
+        <span class="h-px flex-1 bg-gray-200"></span>
     </div>
+
+    <div class="grid grid-cols-2 gap-3">
+        <a href="{{ route('social.redirect', 'github') }}" class="btn-secondary">GitHub</a>
+        <a href="{{ route('social.redirect', 'google') }}" class="btn-secondary">Google</a>
+    </div>
+
+    <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('ما عندك حساب؟') }} <a href="{{ route('register') }}" class="font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300">{{ __('أنشئ حساب جديد') }}</a></p>
 </x-guest-layout>

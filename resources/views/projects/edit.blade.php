@@ -1,47 +1,35 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800">تعديل المشروع</h2>
+        <x-page-header :eyebrow="__('مشاريع')">{{ __('تعديل المشروع') }}</x-page-header>
     </x-slot>
 
-    <div class="py-8">
-        <div class="mx-auto max-w-xl px-4">
-            <form action="{{ route('projects.update', $project) }}" method="POST"
-                class="space-y-5 rounded-xl bg-white p-6 shadow">
-                @csrf
-                @method('PUT')
+    <div class="mx-auto max-w-xl">
+        <form action="{{ route('projects.update', $project) }}" method="POST" class="card flex flex-col gap-5 p-6">
+            @csrf
+            @method('PUT')
 
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-700">اسم المشروع</label>
-                    <input type="text" name="name" value="{{ old('name', $project->name) }}"
-                        class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                    @error('name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
+            <div>
+                <x-input-label for="name" :value="__('اسم المشروع')" />
+                <x-text-input id="name" type="text" name="name" :value="old('name', $project->name)" required autofocus />
+                <x-input-error :messages="$errors->get('name')" />
+            </div>
 
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-700">الوصف</label>
-                    <textarea name="description" rows="3"
-                        class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $project->description) }}</textarea>
-                    @error('description') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
+            <div>
+                <x-input-label for="description" :value="__('الوصف')" />
+                <textarea id="description" name="description" rows="3" class="field">{{ old('description', $project->description) }}</textarea>
+                <x-input-error :messages="$errors->get('description')" />
+            </div>
 
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-700">اللون</label>
-                    <input type="color" name="color" value="{{ old('color', $project->color) }}"
-                        class="h-10 w-20 rounded border-gray-300">
-                    @error('color') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
+            <div>
+                <x-input-label for="color" :value="__('اللون')" />
+                <input id="color" type="color" name="color" value="{{ old('color', $project->color) }}" class="h-10 w-20 rounded-lg border border-gray-300 p-1">
+                <x-input-error :messages="$errors->get('color')" />
+            </div>
 
-                <div class="flex gap-3">
-                    <button type="submit"
-                        class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
-                        تحديث
-                    </button>
-                    <a href="{{ route('projects.index') }}"
-                        class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">
-                        إلغاء
-                    </a>
-                </div>
-            </form>
-        </div>
+            <div class="flex gap-3 pt-2">
+                <button type="submit" class="btn-primary">{{ __('تحديث') }}</button>
+                <a href="{{ route('projects.index') }}" class="btn-secondary">{{ __('إلغاء') }}</a>
+            </div>
+        </form>
     </div>
 </x-app-layout>

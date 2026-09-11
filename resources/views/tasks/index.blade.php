@@ -1,164 +1,126 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800">كل المهام</h2>
+        <x-page-header>
+            <x-slot:eyebrow>{{ __('كل المهام') }} &middot; <bdi>{{ $tasks->total() }}</bdi></x-slot:eyebrow>
+            {{ __('كل المهام') }}
+        </x-page-header>
     </x-slot>
 
-    <div class="py-8">
-        <div class="mx-auto max-w-4xl px-4 space-y-6">
+    <div class="flex flex-col gap-8" x-data="{ open: {{ old('title') || $errors->any() ? 'true' : 'false' }} }">
 
-            @if (session('success'))
-                <div class="rounded-lg bg-green-100 px-4 py-3 text-sm text-green-800">
-                    {{ session('success') }}
-                </div>
+        <div class="flex justify-end">
+            <button type="button" @click="open = !open" class="btn-primary">
+                <span x-show="!open" class="flex items-center gap-2">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                    {{ __('إضافة مهمة') }}
+                </span>
+                <span x-show="open" style="display:none;">{{ __('إخفاء') }}</span>
+            </button>
+        </div>
+
+        <form method="GET" action="{{ route('tasks.index') }}" class="card flex flex-wrap items-end gap-3 p-4">
+            <div class="min-w-[220px] flex-1">
+                <input type="text" name="search" value="{{ request('search') }}" class="field" placeholder="{{ __('بحث بعنوان المهمة…') }}">
+            </div>
+            <select name="status" class="field w-auto">
+                <option value="">{{ __('كل الحالات') }}</option>
+                <option value="todo" @selected(request('status') === 'todo')>{{ __('قيد الانتظار') }}</option>
+                <option value="in_progress" @selected(request('status') === 'in_progress')>{{ __('قيد التنفيذ') }}</option>
+                <option value="done" @selected(request('status') === 'done')>{{ __('مكتملة') }}</option>
+            </select>
+            <select name="priority" class="field w-auto">
+                <option value="">{{ __('كل الأولويات') }}</option>
+                <option value="low" @selected(request('priority') === 'low')>{{ __('منخفضة') }}</option>
+                <option value="medium" @selected(request('priority') === 'medium')>{{ __('متوسطة') }}</option>
+                <option value="high" @selected(request('priority') === 'high')>{{ __('عالية') }}</option>
+            </select>
+            <button type="submit" class="btn-secondary">{{ __('فلترة') }}</button>
+            @if (request()->hasAny(['search', 'status', 'priority']))
+                <a href="{{ route('tasks.index') }}" class="btn-ghost">{{ __('إعادة تعيين') }}</a>
             @endif
+        </form>
 
-            {{-- الفلترة --}}
-            <div class="rounded-xl bg-white p-4 shadow">
-                <form method="GET" action="{{ route('tasks.index') }}" class="flex flex-wrap items-end gap-4">
-                                        <div>
-                        <label class="mb-1 block text-xs font-medium text-gray-600">بحث</label>
-                        <input type="text" name="search" value="{{ request('search') }}"
-                               placeholder="عنوان المهمة..."
-                               class="rounded-lg border-gray-300 text-sm">
-                    </div>
-                    <div>
-                        <label class="mb-1 block text-xs font-medium text-gray-600">الحالة</label>
-                        <select name="status" class="rounded-lg border-gray-300 text-sm">
-                            <option value="">الكل</option>
-                            <option value="todo" @selected(request('status') === 'todo')>قيد الانتظار</option>
-                            <option value="in_progress" @selected(request('status') === 'in_progress')>قيد التنفيذ</option>
-                            <option value="done" @selected(request('status') === 'done')>مكتملة</option>
+        <div x-show="open" x-cloak x-transition class="card flex flex-col gap-4 p-6" style="display:none;">
+            <h3 class="font-bold text-gray-900 dark:text-white">{{ __('مهمة جديدة') }}</h3>
+
+            @if ($projects->isEmpty())
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    {{ __('لازم تنشئ مشروع أول.') }}
+                    <a href="{{ route('projects.create') }}" class="font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300">{{ __('أنشئ مشروع') }}</a>
+                </p>
+            @else
+                <form action="{{ route('tasks.store') }}" method="POST" class="flex flex-col gap-4">
+                    @csrf
+
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                        <input type="text" name="title" class="field lg:col-span-2" placeholder="{{ __('عنوان المهمة') }}" value="{{ old('title') }}">
+
+                        <select name="project_id" class="field">
+                            <option value="">{{ __('اختر المشروع') }}</option>
+                            @foreach ($projects as $project)
+                                <option value="{{ $project->id }}" @selected(old('project_id') == $project->id)>{{ $project->name }}</option>
+                            @endforeach
+                        </select>
+
+                        <select name="status" class="field">
+                            <option value="todo" @selected(old('status', 'todo') === 'todo')>{{ __('قيد الانتظار') }}</option>
+                            <option value="in_progress" @selected(old('status') === 'in_progress')>{{ __('قيد التنفيذ') }}</option>
+                            <option value="done" @selected(old('status') === 'done')>{{ __('مكتملة') }}</option>
+                        </select>
+
+                        <select name="priority" class="field">
+                            <option value="medium" @selected(old('priority', 'medium') === 'medium')>{{ __('أولوية متوسطة') }}</option>
+                            <option value="high" @selected(old('priority') === 'high')>{{ __('أولوية عالية') }}</option>
+                            <option value="low" @selected(old('priority') === 'low')>{{ __('أولوية منخفضة') }}</option>
                         </select>
                     </div>
 
-                    <div>
-                        <label class="mb-1 block text-xs font-medium text-gray-600">الأولوية</label>
-                        <select name="priority" class="rounded-lg border-gray-300 text-sm">
-                            <option value="">الكل</option>
-                            <option value="low" @selected(request('priority') === 'low')>منخفضة</option>
-                            <option value="medium" @selected(request('priority') === 'medium')>متوسطة</option>
-                            <option value="high" @selected(request('priority') === 'high')>عالية</option>
-                        </select>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <input type="date" name="due_date" value="{{ old('due_date') }}" class="field tnum">
+                        <input type="text" name="tags" value="{{ old('tags') }}" class="field" placeholder="{{ __('وسوم (مثال: مهم, شغل)') }}">
                     </div>
 
-                    <button type="submit"
-                            class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
-                        فلترة
-                    </button>
-
-                    <a href="{{ route('tasks.index') }}"
-                       class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">
-                        إعادة تعيين
-                    </a>
-                </form>
-            </div>
-
-            {{-- قائمة المهام --}}
-            <div class="space-y-3">
-                <h3 class="font-semibold text-gray-800">النتائج ({{ $tasks->count() }})</h3>
-
-                @forelse ($tasks as $task)
-                    <div class="flex items-center justify-between rounded-xl bg-white p-4 shadow">
-                        <div>
-                            <p class="font-medium text-gray-800 {{ $task->status === 'done' ? 'line-through text-gray-400' : '' }}">
-                                {{ $task->title }}
-                            </p>
-                            <div class="mt-1 flex flex-wrap gap-2 text-xs">
-                                {{-- اسم المشروع التابع له --}}
-                                <a href="{{ route('projects.show', $task->project) }}"
-                                   class="rounded-full bg-indigo-50 px-2 py-0.5 text-indigo-700 hover:underline">
-                                    {{ $task->project->name }}
-                                </a>
-
-                                <span class="rounded-full px-2 py-0.5
-                                    @if($task->priority === 'high') bg-red-100 text-red-700
-                                    @elseif($task->priority === 'medium') bg-yellow-100 text-yellow-700
-                                    @else bg-gray-100 text-gray-600 @endif">
-                                    {{ ['low' => 'منخفضة', 'medium' => 'متوسطة', 'high' => 'عالية'][$task->priority] }}
-                                </span>
-
-                                <span class="rounded-full px-2 py-0.5
-                                    @if($task->status === 'done') bg-green-100 text-green-700
-                                    @elseif($task->status === 'in_progress') bg-blue-100 text-blue-700
-                                    @else bg-gray-100 text-gray-600 @endif">
-                                    {{ ['todo' => 'قيد الانتظار', 'in_progress' => 'قيد التنفيذ', 'done' => 'مكتملة'][$task->status] }}
-                                </span>
-
-                                @if ($task->due_date)
-                                    <span class="text-gray-400">📅 {{ $task->due_date->format('Y-m-d') }}</span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <p class="rounded-xl bg-white p-6 text-center text-gray-400 shadow">
-                        ما في مهام مطابقة.
-                    </p>
-                @endforelse
-
-                <div class="mt-4">
-                    {{ $tasks->links() }}
-                </div>
-            </div>
-                                   {{-- إضافة مهمة سريعة --}}
-            <div x-data="{ open: false }">
-                <button @click="open = !open"
-                        class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
-                    <span x-show="!open">+ إضافة مهمة</span>
-                    <span x-show="open">− إخفاء</span>
-                </button>
-
-                <div x-show="open" x-collapse class="mt-3 rounded-xl bg-white p-6 shadow">
-                    @if ($projects->isEmpty())
-                        <p class="text-sm text-gray-500">
-                            لازم تنشئ مشروع أول.
-                            <a href="{{ route('projects.create') }}" class="text-indigo-600 hover:underline">أنشئ مشروع</a>
-                        </p>
-                    @else
-                        <form action="{{ route('tasks.store') }}" method="POST" class="space-y-4">
-                            @csrf
-
-                            <div class="grid gap-4 sm:grid-cols-2">
-                                <input type="text" name="title" placeholder="عنوان المهمة" value="{{ old('title') }}"
-                                       class="rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-
-                                <select name="project_id" class="rounded-lg border-gray-300">
-                                    <option value="">اختر المشروع</option>
-                                    @foreach ($projects as $project)
-                                        <option value="{{ $project->id }}" @selected(old('project_id') == $project->id)>
-                                            {{ $project->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="grid gap-4 sm:grid-cols-3">
-                                <select name="status" class="rounded-lg border-gray-300">
-                                    <option value="todo">قيد الانتظار</option>
-                                    <option value="in_progress">قيد التنفيذ</option>
-                                    <option value="done">مكتملة</option>
-                                </select>
-
-                                <select name="priority" class="rounded-lg border-gray-300">
-                                    <option value="low">أولوية منخفضة</option>
-                                    <option value="medium" selected>أولوية متوسطة</option>
-                                    <option value="high">أولوية عالية</option>
-                                </select>
-
-                                <input type="date" name="due_date" value="{{ old('due_date') }}"
-                                       class="rounded-lg border-gray-300">
-                            </div>
-
-                            <input type="text" name="tags" placeholder="وسوم (مثال: مهم, شغل)" value="{{ old('tags') }}"
-                                   class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-
-                            <button type="submit"
-                                    class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
-                                إضافة المهمة
-                            </button>
-                        </form>
+                    @if ($errors->any())
+                        <x-input-error :messages="$errors->all()" />
                     @endif
-                </div>
-            </div>
+
+                    <button type="submit" class="btn-primary self-start">{{ __('إضافة المهمة') }}</button>
+                </form>
+            @endif
+        </div>
+
+        <div class="card overflow-x-auto p-2">
+            <table class="table-clean min-w-[720px]">
+            <thead>
+                <tr>
+                    <th>{{ __('المهمة') }}</th><th>{{ __('المشروع') }}</th><th>{{ __('الحالة') }}</th><th>{{ __('الأولوية') }}</th><th>{{ __('التاريخ') }}</th><th>{{ __('الوسوم') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($tasks as $task)
+                    <tr>
+                        <td class="font-medium {{ $task->status === 'done' ? 'text-gray-400 line-through dark:text-gray-500' : 'text-gray-900 dark:text-gray-100' }}">
+                            {{ $task->title }}
+                        </td>
+                        <td><a href="{{ route('projects.show', $task->project) }}" class="text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300">{{ $task->project->name }}</a></td>
+                        <td><x-status-badge :status="$task->status" /></td>
+                        <td><x-priority-badge :priority="$task->priority" /></td>
+                        <td class="tnum">{{ $task->due_date?->format('Y-m-d') }}</td>
+                        <td class="text-gray-500 dark:text-gray-400">
+                            @foreach ($task->tags as $tag)
+                                <span class="badge-gray">#{{ $tag->name }}</span>
+                            @endforeach
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="6" class="text-center text-gray-400 dark:text-gray-500">{{ __('ما في مهام مطابقة.') }}</td></tr>
+                @endforelse
+            </tbody>
+            </table>
+        </div>
+
+        <div class="tnum">
+            {{ $tasks->links() }}
+        </div>
     </div>
 </x-app-layout>

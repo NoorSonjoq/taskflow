@@ -22,6 +22,23 @@ class DashboardController extends Controller
                                 ->count(),
         ];
 
-        return view('dashboard', compact('stats'));
+        $priorityRank = ['high' => 0, 'medium' => 1, 'low' => 2];
+
+        $todayTasks = $user->tasks()
+            ->with('project')
+            ->whereDate('due_date', today())
+            ->get()
+            ->sortBy(fn ($task) => $priorityRank[$task->priority] ?? 99)
+            ->values();
+
+        $projectProgress = $user->projects()
+            ->withCount([
+                'tasks',
+                'tasks as done_tasks_count' => fn ($query) => $query->where('status', 'done'),
+            ])
+            ->latest()
+            ->get();
+
+        return view('dashboard', compact('stats', 'todayTasks', 'projectProgress'));
     }
 }

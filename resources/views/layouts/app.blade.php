@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="rtl">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,27 +7,35 @@
 
         <title>{{ config('app.name', 'TaskFlow') }}</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=tajawal:400,500,700&display=swap" rel="stylesheet" />
-        <!-- Scripts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+        @include('layouts.theme-script')
+
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-[#bfd4ff]">            @include('layouts.navigation')
+        <div class="min-h-screen">
+            @include('layouts.navigation')
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="border-b border-white/5" style="background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(12px);">                    <div class="max-w-7xl mx-auto py-5 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+            <main>
+                <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 md:px-10 md:py-12">
+                    @if (session('success'))
+                        {{-- ملاحظة: الرسالة نفسها متخزّنة مترجمة من الكنترولر عبر __() --}}
+                        <div class="mb-8 rounded-lg bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
+                            {{ session('success') }}
+                        </div>
+                    @endif
 
-            <!-- Page Content -->
-            <main class="page-enter">
-                {{ $slot }}
+                    @isset($header)
+                        <div class="mb-8">{{ $header }}</div>
+                    @endisset
+
+                    {{ $slot }}
+                </div>
             </main>
+
+            @include('layouts.footer')
         </div>
     </body>
 </html>
